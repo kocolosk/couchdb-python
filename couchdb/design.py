@@ -48,6 +48,18 @@ class ViewDefinition(object):
         emit(doc._id, null);
     }
 
+    Python function objects can be used in place of JavaScript strings if the
+    view server in this library has been installed:
+    
+    >>> map_fun = lambda doc: (yield doc['somekey'], doc['somevalue'])
+    >>> view = ViewDefinition('test2', 'somename', map_fun, language='python')
+    >>> view.sync(db)
+    >>> design_doc = view.get_doc(db)
+    >>> design_doc                                          #doctest: +ELLIPSIS
+    <Document '_design/test2'@'...' {...}>
+    >>> print design_doc['views']['somename']['map']
+    map_fun = lambda doc: (yield doc['somekey'], doc['somevalue'])
+    
     Use the static `sync_many()` method to create or update a collection of
     views in the database in an atomic and efficient manner, even across
     different design documents.
@@ -76,10 +88,10 @@ class ViewDefinition(object):
         self.design = design
         self.name = name
         if isinstance(map_fun, FunctionType):
-            map_fun = getsource(map_fun)
+            map_fun = getsource(map_fun).rstrip('\n\r')
         self.map_fun = dedent(map_fun.lstrip('\n\r'))
         if isinstance(reduce_fun, FunctionType):
-            reduce_fun = getsource(reduce_fun)
+            reduce_fun = getsource(reduce_fun).rstrip('\n\r')
         if reduce_fun:
             reduce_fun = dedent(reduce_fun.lstrip('\n\r'))
         self.reduce_fun = reduce_fun

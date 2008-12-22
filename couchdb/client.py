@@ -638,10 +638,10 @@ class TemporaryView(View):
                  language='javascript', wrapper=None, http=None):
         View.__init__(self, uri, wrapper=wrapper, http=http)
         if isinstance(map_fun, FunctionType):
-            map_fun = getsource(map_fun)
+            map_fun = getsource(map_fun).rstrip('\n\r')
         self.map_fun = dedent(map_fun.lstrip('\n\r'))
         if isinstance(reduce_fun, FunctionType):
-            reduce_fun = getsource(reduce_fun)
+            reduce_fun = getsource(reduce_fun).rstrip('\n\r')
         if reduce_fun:
             reduce_fun = dedent(reduce_fun.lstrip('\n\r'))
         self.reduce_fun = reduce_fun
