@@ -76,12 +76,11 @@ class ViewDefinition(object):
         self.design = design
         self.name = name
         if isinstance(map_fun, FunctionType):
-            self.map_fun = getsource(map_fun)
-        else:
-            self.map_fun = dedent(map_fun.lstrip('\n\r'))
+            map_fun = getsource(map_fun)
+        self.map_fun = dedent(map_fun.lstrip('\n\r'))
         if isinstance(reduce_fun, FunctionType):
             reduce_fun = getsource(reduce_fun)
-        elif reduce_fun:
+        if reduce_fun:
             reduce_fun = dedent(reduce_fun.lstrip('\n\r'))
         self.reduce_fun = reduce_fun
         self.language = language
