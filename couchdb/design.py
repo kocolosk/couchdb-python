@@ -12,6 +12,8 @@ from copy import deepcopy
 from itertools import groupby
 from operator import attrgetter
 from textwrap import dedent
+from types import FunctionType
+from inspect import getsource
 
 __all__ = ['ViewDefinition']
 __docformat__ = 'restructuredtext en'
@@ -73,8 +75,13 @@ class ViewDefinition(object):
             design = design[8:]
         self.design = design
         self.name = name
-        self.map_fun = dedent(map_fun.lstrip('\n\r'))
-        if reduce_fun:
+        if isinstance(map_fun, FunctionType):
+            self.map_fun = getsource(map_fun)
+        else:
+            self.map_fun = dedent(map_fun.lstrip('\n\r'))
+        if isinstance(reduce_fun, FunctionType):
+            reduce_fun = getsource(reduce_fun)
+        elif reduce_fun:
             reduce_fun = dedent(reduce_fun.lstrip('\n\r'))
         self.reduce_fun = reduce_fun
         self.language = language

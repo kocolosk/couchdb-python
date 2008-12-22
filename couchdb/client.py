@@ -26,6 +26,8 @@ False
 import httplib2
 from mimetypes import guess_type
 from urllib import quote, urlencode
+from types import FunctionType
+from inspect import getsource
 import re
 import socket
 try:
@@ -634,8 +636,14 @@ class TemporaryView(View):
     def __init__(self, uri, map_fun=None, reduce_fun=None,
                  language='javascript', wrapper=None, http=None):
         View.__init__(self, uri, wrapper=wrapper, http=http)
-        self.map_fun = map_fun
-        self.reduce_fun = reduce_fun
+        if isinstance(map_fun, FunctionType):
+            self.map_fun = getsource(map_fun)
+        else:
+            self.map_fun = map_fun
+        if isinstance(reduce_fun, FunctionType):
+            self.reduce_fun = getsource(reduce_fun)
+        else:
+            self.reduce_fun = reduce_fun
         self.language = language
 
     def __repr__(self):
